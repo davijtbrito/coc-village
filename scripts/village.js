@@ -181,30 +181,43 @@ Hooks.once('ready', () => {
             printTotalFoodSuppliesDemand: async function (sceneId, drawingId, multipler = 1 ) {                
                 const total = game.mainVillage.villagers.length * multipler;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Demand Food Supplies (day):   ${total}`);
+
+                console.log(`Total food supplies demand printed: ${total}`);
             },
             printTotalFirewoodsDemand: async function (sceneId, drawingId, multipler = 1 ) {                
                 const total = game.mainVillage.houses.length * multipler;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Demand Firewood (day):   ${total}`);
+                console.log(`Total firewoods demand printed: ${total}`);
             },
             printTotalAdults: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.villagers.filter(v => v.isAdult).length;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Adults:   ${total}`);
+
+                console.log(`Total adults printed: ${total}`);
             },
             printTotalChilds: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.villagers.filter(v => !v.isAdult).length;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Childs:   ${total}`);
+
+                console.log(`Total childs printed: ${total}`);
             },
             printTotalFarms: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.farms.length;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Farms:   ${total}`);
+
+                console.log(`Total farms printed: ${total}`);
             },
             printTotalWorkshops: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.workshops.length;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Workshops:   ${total}`);
+
+                console.log(`Total workshops printed: ${total}`);
             },
             printTotalHouses: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.houses.length;
                 game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Houses:   ${total}`);
+
+                console.log(`Total houses printed: ${total}`);
             }
         }
     }
