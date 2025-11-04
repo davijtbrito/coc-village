@@ -3,10 +3,11 @@ Hooks.once('ready', () => {
     if (!game.mainVillage) game.mainVillage = {};
 
     game.mainVillage = {
-        farms: [],
-        totalWorkshops: [],
+        farms: [],        
+        workshops: [],
         houses: [],
         villagers: [],
+        warehouse: null,
         events: {
             runCycle: function () {
                 console.log('Running village cycle...');
@@ -98,13 +99,66 @@ Hooks.once('ready', () => {
                     game.mainVillage.workshops.push(workshop);
                 });
             },
+            addWarehouse: function () {
+                const startWith = "warehouse";
+                const typeActor = "container";
+
+                const warehouse = game.actors.find(p => p.type === typeActor
+                    && p.name.toLowerCase().startsWith(startWith));
+                
+                if (!warehouse) {
+                    ui.notifications.error(`No warehouse actor found.`);
+                    return;
+                }    
+
+                game.mainVillage.warehouse = warehouse;
+            },
             addAllBuildings: function () {
                 game.mainVillage.methods.addAllHouses();
                 game.mainVillage.methods.addAllFarms();
                 game.mainVillage.methods.addAllWorkshops();
+                game.mainVillage.methods.addWarehouse();
             }
         },
+        cycle:{
+            /**
+             * This method updates the food supplies in the warehouse based on the number of workers and villagers.
+             * @param {*} sceneId 
+             * @param {*} workersDrawingId 
+             * @param {*} itemId 
+             * @param {*} multiplerAdd 
+             * @param {*} multiplerDeduce 
+             */
+            foodSupplies: async function(sceneId, workersDrawingId, itemId, multiplerAdd = 1, multiplerDeduce = 1) {                 
+                const scene = game.scenes.find(s => s.id === sceneId);   
+
+                //getting workers drawing with total workers
+                const workersDrawing = scene.drawings.get(workersDrawingId);                
+
+                //getting warehouse actor
+                const warehouse = game.mainVillage.warehouse;
+                
+                const food = warehouse.items.find(i => i.id === itemId);
+                
+                //calculating the total to add and deduce from the food supplies
+                const add = (Number(workersDrawing.text) * multiplerAdd);
+                const deduce = game.mainVillage.villagers.length * multiplerDeduce;
+
+                //updating food quantity
+                const newQuantity = food.system.quantity + (add - deduce);
+                await food.update({ "system.quantity": newQuantity });
+
+                console.log(`Food supplies updated. Added: ${add}, Deduce: ${deduce}, New Quantity: ${newQuantity}`);
+            },
+        },
         summary: {
+            /**
+             * Print a text inside a drawing in a scene.
+             * @param {*} sceneId id of the scene
+             * @param {*} drawingId id of the drawing
+             * @param {*} content content to print
+             * @returns 
+             */
             printInDrawing: async function (sceneId, drawingId, content) {
                 const scene = game.scenes.find(s => s.id === sceneId);
                 if (!scene) {
@@ -123,6 +177,14 @@ Hooks.once('ready', () => {
                     _id: drawing.id,
                     text: content
                 }]);
+            },
+            printTotalFoodSuppliesDemand: async function (sceneId, drawingId, multipler = 1 ) {                
+                const total = game.mainVillage.villagers.length * multipler;
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Demand Food Supplies (day):   ${total}`);
+            },
+            printTotalFirewoodsDemand: async function (sceneId, drawingId, multipler = 1 ) {                
+                const total = game.mainVillage.houses.length * multipler;
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Demand Firewood (day):   ${total}`);
             },
             printTotalAdults: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.villagers.filter(v => v.isAdult).length;
