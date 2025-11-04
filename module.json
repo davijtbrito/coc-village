@@ -1,0 +1,23 @@
+{
+  "id": "coc-village",
+  "title": "Simple Village for CoC",
+  "description": "Simple Village module for Call of Cthulhu 7th Edition RPG on Foundry VTT.",
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "davi"
+    }
+  ],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "13.346"
+  },  
+  "scripts": [
+    "scripts/village.js"    
+  ],
+  "styles": [],  
+  "packs": [],
+  "url": "",
+  "manifest": "",
+  "download": ""
+}
