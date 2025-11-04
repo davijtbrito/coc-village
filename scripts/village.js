@@ -123,11 +123,11 @@ Hooks.once('ready', () => {
         cycle:{
             /**
              * This method updates the food supplies in the warehouse based on the number of workers and villagers.
-             * @param {*} sceneId 
-             * @param {*} workersDrawingId 
-             * @param {*} itemId 
-             * @param {*} multiplerAdd 
-             * @param {*} multiplerDeduce 
+             * @param {*} sceneId scene id where the workers drawing is located
+             * @param {*} workersDrawingId drawing id that contains the total number of workers
+             * @param {*} itemId item id of the food supplies in the warehouse
+             * @param {*} multiplerAdd multiplier to calculate the total to add based on workers
+             * @param {*} multiplerDeduce multiplier to calculate the total to deduce based on villagers
              */
             foodSupplies: async function(sceneId, workersDrawingId, itemId, multiplerAdd = 1, multiplerDeduce = 1) {                 
                 const scene = game.scenes.find(s => s.id === sceneId);   
