@@ -377,7 +377,11 @@ Hooks.once('ready', () => {
              * @param {*} drawingId drawing id to print the resource quantity
              * @param {*} itemId 
              */
-            printResourcesFromWarehouse: async function (sceneId, drawingId, itemId) {                                
+            printResourcesFromWarehouse: async function (sceneId, drawingId, itemId) {  
+                if (!game.mainVillage.methods.validateWarehouse()) {                
+                    return;
+                }
+                
                 const warehouse = game.mainVillage.warehouse;
                 const item = warehouse.items.find(i => i.id === itemId);                
                 const quantity = item ? item.system.quantity : 0;
