@@ -8,6 +8,26 @@ Hooks.once('ready', () => {
         houses: [],
         villagers: [],
         warehouse: null,
+        calendar:{            
+            addDays: async function(sceneId, drawingId, days = 1) {
+
+                if (!game.mainVillage.methods.validateSceneAndDrawing(sceneId, drawingId)) {
+                    return;
+                }   
+
+                const scene = game.scenes.find(s => s.id === sceneId);                
+                const drawing = scene.drawings.get(drawingId);                                
+
+                const fullDate = drawing.text;
+                let date = new Date(fullDate);
+                date.setDate(date.getDate() + days);
+                
+                await scene.updateEmbeddedDocuments("Drawing", [{
+                    _id: drawingId,
+                    text: `${date.toISOString().split("T")[0]}`
+                }]);
+            }
+        },
         methods: {            
             addAllVillager: function () {
                 const startsWithAdult = "adult:";
@@ -134,6 +154,21 @@ Hooks.once('ready', () => {
                 }
 
                 return true;
+            },
+            validateSceneAndDrawing: function (sceneId, drawingId) {
+                const scene = game.scenes.find(s => s.id === sceneId);
+                if (!scene) {
+                    ui.notifications.error("No active scene is currently viewed.");
+                    return false;
+                }
+
+                const drawing = scene.drawings.get(drawingId);
+                if (!drawing) {
+                    ui.notifications.error(`Drawing with ID "${drawingId}" not found in scene "${scene.name}".`);
+                    return false;
+                }
+
+                return true;
             }
         },
         cycle:{            
@@ -235,17 +270,13 @@ Hooks.once('ready', () => {
              * @returns 
              */
             printInDrawing: async function (sceneId, drawingId, content) {
-                const scene = game.scenes.find(s => s.id === sceneId);
-                if (!scene) {
-                    ui.notifications.error("No active scene is currently viewed.");
+
+                if (!game.mainVillage.methods.validateSceneAndDrawing(sceneId, drawingId)) {
                     return;
                 }
 
-                const drawing = scene.drawings.get(drawingId);
-                if (!drawing) {
-                    ui.notifications.error(`Drawing with ID "${drawingId}" not found in scene "${scene.name}".`);
-                    return;
-                }                
+                const scene = game.scenes.find(s => s.id === sceneId);                
+                const drawing = scene.drawings.get(drawingId);                                
 
                 // === Update the drawing text ===
                 await scene.updateEmbeddedDocuments("Drawing", [{
