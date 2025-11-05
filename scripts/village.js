@@ -292,6 +292,20 @@ Hooks.once('ready', () => {
 
                 const totalProduction = game.mainVillage.farms.length * productionPerFarm;
                 game.mainVillage.summary.printInDrawing(sceneId, totalId, `( ${totalProduction} / Harverst )`);                
+            },
+            /**
+             * This method prints the quantity of a specific resource stored in the warehouse.
+             * @param {*} sceneId scene id where the drawing is located
+             * @param {*} drawingId drawing id to print the resource quantity
+             * @param {*} itemId 
+             */
+            printResourcesFromWarehouse: async function (sceneId, drawingId, itemId) {                                
+                const warehouse = game.mainVillage.warehouse;
+                const item = warehouse.items.find(i => i.id === itemId);                
+                const quantity = item ? item.system.quantity : 0;
+
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total ${item.name}:   ${quantity}`);                   
+                console.log(`Resource from warehouse printed: ${quantity}`);
             }
         }
     }
