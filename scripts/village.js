@@ -7,7 +7,7 @@ Hooks.once('ready', () => {
         workshops: [],
         houses: [],
         villagers: [],
-        warehouse: null,
+        warehouse: null,        
         calendar:{            
             addDays: async function(sceneId, drawingId, days = 1) {
 
@@ -21,11 +21,30 @@ Hooks.once('ready', () => {
                 const fullDate = drawing.text;
                 let date = new Date(fullDate);
                 date.setDate(date.getDate() + days);
+                const strDate = date.toISOString().split("T")[0];
                 
                 await scene.updateEmbeddedDocuments("Drawing", [{
                     _id: drawingId,
-                    text: `${date.toISOString().split("T")[0]}`
+                    text: `Current Date: ${strDate} (${game.mainVillage.calendar.getSeason(date)})`
                 }]);
+            },
+            getSeason(date){
+                if (!(date instanceof Date)) {
+                    console.error("Invalid date object provided.");
+                    return null;
+                }
+
+                const month = date.getMonth() + 1; // getMonth() returns 0-11
+
+                if ([12, 1, 2].includes(month)) {
+                    return "Winter";
+                } else if ([3, 4, 5].includes(month)) {
+                    return "Spring";
+                } else if ([6, 7, 8].includes(month)) {
+                    return "Summer";
+                } else if ([9, 10, 11].includes(month)) {
+                    return "Autumn";
+                }
             }
         },
         methods: {            
@@ -294,7 +313,7 @@ Hooks.once('ready', () => {
              */
             printTotalFoodSuppliesDemand: async function (sceneId, drawingId, multipler = 1 ) {                
                 const total = game.mainVillage.villagers.length * multipler;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Demand Food Supplies (day):   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Food Supplies (day):   ${total}`);
 
                 console.log(`Total food supplies demand printed: ${total}`);
             },
@@ -306,7 +325,7 @@ Hooks.once('ready', () => {
              */
             printTotalFirewoodsDemand: async function (sceneId, drawingId, multipler = 1 ) {                
                 const total = game.mainVillage.houses.length * multipler;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Demand Firewood (day):   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Firewood (day):   ${total}`);
                 console.log(`Total firewoods demand printed: ${total}`);
             },
             /**
@@ -316,7 +335,7 @@ Hooks.once('ready', () => {
              */
             printTotalAdults: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.villagers.filter(v => v.isAdult).length;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Adults:   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Adults:   ${total}`);
 
                 console.log(`Total adults printed: ${total}`);
             },
@@ -327,7 +346,7 @@ Hooks.once('ready', () => {
              */
             printTotalChilds: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.villagers.filter(v => !v.isAdult).length;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Childs:   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Childs:   ${total}`);
 
                 console.log(`Total childs printed: ${total}`);
             },
@@ -338,7 +357,7 @@ Hooks.once('ready', () => {
              */
             printTotalFarms: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.farms.length;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Farms:   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Farms:   ${total}`);
 
                 console.log(`Total farms printed: ${total}`);
             },
@@ -349,7 +368,7 @@ Hooks.once('ready', () => {
              */
             printTotalWorkshops: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.workshops.length;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Workshops:   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Workshops:   ${total}`);
 
                 console.log(`Total workshops printed: ${total}`);
             },
@@ -360,7 +379,7 @@ Hooks.once('ready', () => {
              */
             printTotalHouses: async function (sceneId, drawingId) {                
                 const total = game.mainVillage.houses.length;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Total Houses:   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Houses:   ${total}`);
 
                 console.log(`Total houses printed: ${total}`);
             },
@@ -372,7 +391,7 @@ Hooks.once('ready', () => {
              */
             printFoodSuppliesDemand: async function (sceneId, drawingId, multipler = 1 ) {                
                 const total = game.mainVillage.villagers.length * multipler;
-                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Food Supplies Demand (daily):   ${total}`);
+                game.mainVillage.summary.printInDrawing(sceneId, drawingId, `Food Supplies (daily):   ${total}`);
 
                 console.log(`Food supplies demand printed: ${total}`);
             },
