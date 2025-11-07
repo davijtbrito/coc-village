@@ -4,6 +4,7 @@ Hooks.once('ready', () => {
 
     game.mainVillage = {
         constants: {
+            warehouseActorId: "",//id of the warehouse actor
             foodSuppliesAddPerWorker: 1,//food supplies produce X per worker
             foodSuppliesDeducePerVillager: 1,//food supplies produce X per villager            
             firewoodsAddPerWorker: 1,//firewoods produce X per worker
@@ -142,12 +143,18 @@ Hooks.once('ready', () => {
                     game.mainVillage.workshops.push(workshop);
                 });
             },
-            addWarehouse: function () {
-                const startWith = "warehouse";
+            addWarehouse: function () {                
+                
+                if (!game.mainVillage.constants.warehouseActorId) {
+                    ui.notifications.error("Warehouse Actor ID is not set in the constants.");
+                    return;
+                }
+
                 const typeActor = "container";
+                const warehouseId = game.mainVillage.constants.warehouseActorId;
 
                 const warehouse = game.actors.find(p => p.type === typeActor
-                    && p.name.toLowerCase().startsWith(startWith));
+                    && p.id === warehouseId);
                 
                 if (!warehouse) {
                     ui.notifications.error(`No warehouse actor found.`);
@@ -173,7 +180,7 @@ Hooks.once('ready', () => {
                 game.mainVillage.methods.addAllWorkshops();
                 game.mainVillage.methods.addWarehouse();
 
-                console.log("Village data initialized:");
+                console.log("Village data initialized");
             },
             validateWarehouse: function () {
                 if (!game.mainVillage.warehouse) {
