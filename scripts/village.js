@@ -207,13 +207,26 @@ Hooks.once('ready', () => {
             }
         },
         cycle:{            
+            runCycle: async function(data) {
+
+                game.mainVillage.cycle.foodSupplies(data.sceneId, data.foodWorkersDrawingId, data.foodItemId, data.times);
+                game.mainVillage.cycle.firewoods(data.sceneId, data.firewoodsWorkersDrawingId, data.firewoodsItemId, data.times);
+                game.mainVillage.cycle.logs(data.sceneId, data.logsWorkersDrawingId, data.logsItemId, data.times);    
+
+                ChatMessage.create({
+                    content: `<b>Village Cycle Completed</b><br>>
+                    Food Supplies, Firewoods and Logs have been updated.<br>
+                    Days passed: ${data.times}`,
+                    speaker: ChatMessage.getSpeaker({ alias: "Frozen Frontier" })
+                });
+            },
             /**
              * This method updates the food supplies in the warehouse based on the number of workers and villagers.
              * @param {*} sceneId scene id where the workers drawing is located
              * @param {*} workersDrawingId drawing id that contains the total number of workers
              * @param {*} itemId item id of the food supplies in the warehouse
              */
-            foodSupplies: async function(sceneId, workersDrawingId, itemId) {                 
+            foodSupplies: async function(sceneId, workersDrawingId, itemId, times = 1) {                 
 
                 if (!game.mainVillage.methods.validateWarehouse()) {                
                     return;
@@ -234,7 +247,7 @@ Hooks.once('ready', () => {
                 const deduce = game.mainVillage.villagers.length * game.mainVillage.constants.foodSuppliesDeducePerVillager;
 
                 //updating food quantity
-                const newQuantity = food.system.quantity + (add - deduce);
+                const newQuantity = food.system.quantity + ((add - deduce) * times);
                 await food.update({ "system.quantity": newQuantity });
 
                 console.log(`Food supplies. New Quantity: ${newQuantity}`);
@@ -245,7 +258,7 @@ Hooks.once('ready', () => {
              * @param {*} workersDrawingId working drawing id that contains the total number of workers
              * @param {*} itemId item id of the firewoods in the warehouse
              */
-            firewoods: async function(sceneId, workersDrawingId, itemId) {        
+            firewoods: async function(sceneId, workersDrawingId, itemId, times = 1) {        
                 
                 if (!game.mainVillage.methods.validateWarehouse()) {                
                     return;
@@ -259,7 +272,7 @@ Hooks.once('ready', () => {
                 const add = (Number(workersDrawing.text) * game.mainVillage.constants.firewoodsAddPerWorker);
                 const deduce = game.mainVillage.houses.length * game.mainVillage.constants.firewoodsDeducePerHouse;
                 
-                const newQuantity = firewoods.system.quantity + (add - deduce);
+                const newQuantity = firewoods.system.quantity + ((add - deduce) * times);
                 await firewoods.update({ "system.quantity": newQuantity });
 
                 console.log(`Firewoods. New Quantity: ${newQuantity}`);
@@ -270,7 +283,7 @@ Hooks.once('ready', () => {
              * @param {*} workersDrawingId working drawing id that contains the total number of workers
              * @param {*} itemId item id of the logs in the warehouse             
              */
-            logs: async function(sceneId, workersDrawingId, itemId) {    
+            logs: async function(sceneId, workersDrawingId, itemId, times = 1) {    
                 
                 if (!game.mainVillage.methods.validateWarehouse()) {                
                     return;
@@ -285,7 +298,7 @@ Hooks.once('ready', () => {
                 const add = (Number(workersDrawing.text) * game.mainVillage.constants.logsAddPerWorker);                
 
                 //updating food quantity
-                const newQuantity = logs.system.quantity + add;
+                const newQuantity = (logs.system.quantity + (add * times));
                 await logs.update({ "system.quantity": newQuantity });
 
                 console.log(`Logs. New Quantity: ${newQuantity}`);
